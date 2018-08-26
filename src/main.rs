@@ -2,18 +2,23 @@ extern crate passwords;
 
 use std::io;
 
-use passwords::generators::random_string::{ASCII_LOWERCASE, DIGITS, RandomString};
+use passwords::generators::base::{Constant, PasswordGenerator};
+use passwords::generators::base::{ASCII_LOWERCASE, ASCII_UPPERCASE, DIGITS};
+use passwords::generators::case::Case;
+use passwords::generators::phrase::{RandomPhrases, RandomWords};
+use passwords::generators::random_string::RandomString;
+
 
 fn main() {
-    let digit_passwords = RandomString::new(16)
-        .with_characters(DIGITS.chars().collect());
+    let passwords = Constant::new("")
+        .pipe(RandomPhrases::new("./texts/alice-in-wonderland.txt", 3, 5))
+        .pipe(Case::Class)
+        .pipe(RandomString::new(2).with_characters(DIGITS.chars().collect()));
+        // .pipe(
+        //     RandomString::new(2)
+        //     .with_characters(DIGITS.chars().collect()))
 
-    let alpha_passwords = RandomString::new(16)
-        .with_characters(ASCII_LOWERCASE.chars().collect());
-
-    let passwords = digit_passwords.chain(alpha_passwords);
-
-    for password in passwords.into_iter() {
+    for password in passwords.iterator().into_iter() {
         println!("> {}", password);
 
         let mut input = String::new();
