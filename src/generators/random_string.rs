@@ -2,14 +2,9 @@ extern crate rand;
 use rand::{Rng, ThreadRng};
 
 use super::base::PasswordGenerator;
+use super::base::{ASCII_LOWERCASE, ASCII_UPPERCASE, DIGITS};
 
 
-pub static ASCII_LOWERCASE: &str = "abcdefghijklmnopqrstuvwxyz";
-pub static ASCII_UPPERCASE: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-pub static DIGITS: &str = "0123456789";
-
-
-#[derive(Debug)]
 pub struct RandomString {
     characters: Vec<char>,
     length: usize,
@@ -56,7 +51,6 @@ impl Iterator for RandomString {
 
     fn next(&mut self) -> Option<Self::Item> {
         let password = self.generate();
-
         Some(password)
     }
 }
