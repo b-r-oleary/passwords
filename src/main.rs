@@ -2,11 +2,16 @@ extern crate passwords;
 
 use std::io;
 
-use passwords::generators::random_string::{DIGITS, RandomString};
+use passwords::generators::random_string::{ASCII_LOWERCASE, DIGITS, RandomString};
 
 fn main() {
-    let passwords = RandomString::new(16)
+    let digit_passwords = RandomString::new(16)
         .with_characters(DIGITS.chars().collect());
+
+    let alpha_passwords = RandomString::new(16)
+        .with_characters(ASCII_LOWERCASE.chars().collect());
+
+    let passwords = digit_passwords.chain(alpha_passwords);
 
     for password in passwords.into_iter() {
         println!("> {}", password);

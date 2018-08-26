@@ -1,20 +1,13 @@
 extern crate rand;
-
 use rand::{Rng, ThreadRng};
+
+use super::base::PasswordGenerator;
 
 
 pub static ASCII_LOWERCASE: &str = "abcdefghijklmnopqrstuvwxyz";
 pub static ASCII_UPPERCASE: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 pub static DIGITS: &str = "0123456789";
 
-
-pub trait PasswordGenerator {
-    fn generate_with_seed(&mut self, seed: String) -> String;
-
-    fn generate(&mut self) -> String {
-        self.generate_with_seed(String::new())
-    }
-}
 
 #[derive(Debug)]
 pub struct RandomString {
