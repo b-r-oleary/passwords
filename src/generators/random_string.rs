@@ -1,4 +1,5 @@
 extern crate rand;
+
 use rand::{Rng, ThreadRng};
 
 use super::base::PasswordGenerator;
@@ -27,12 +28,20 @@ impl RandomString {
 
         RandomString { characters, length, rng }
     }
-
     pub fn with_characters(self, characters: Vec<char>) -> RandomString {
         RandomString {
             characters: characters,
             ..self
         }
+    }
+    pub fn digits(length: usize) -> RandomString {
+        Self::new(length).with_characters(DIGITS.chars().collect())
+    }
+    pub fn ascii_lowercase(length: usize) -> RandomString {
+        Self::new(length).with_characters(ASCII_LOWERCASE.chars().collect())
+    }
+    pub fn ascii_uppercase(length: usize) -> RandomString {
+        Self::new(length).with_characters(ASCII_UPPERCASE.chars().collect())
     }
 }
 

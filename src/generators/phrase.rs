@@ -88,6 +88,6 @@ impl RandomPhrases {
 impl PasswordGenerator for RandomPhrases {
     fn generate_with_seed(&mut self, seed: String) -> String {
         let phrase = self.rng.choose(&self.phrases).unwrap();
-        phrase.join(" ")
+        seed + &phrase.join(" ")
     }
 }
