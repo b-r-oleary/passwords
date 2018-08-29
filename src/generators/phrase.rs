@@ -48,8 +48,6 @@ impl PasswordGenerator for RandomWords {
 
 pub struct RandomPhrases {
     phrases: Vec<Vec<String>>,
-    min_length: usize,
-    max_length: usize,
     rng: ThreadRng,
 }
 
@@ -81,7 +79,7 @@ impl RandomPhrases {
 
         let rng = rand::thread_rng();
 
-        RandomPhrases { phrases, min_length, max_length, rng }
+        RandomPhrases { phrases, rng }
     }
 }
 
