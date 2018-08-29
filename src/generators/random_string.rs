@@ -54,12 +54,3 @@ impl PasswordGenerator for RandomString {
         seed
     }
 }
-
-impl Iterator for RandomString {
-    type Item = String;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let password = self.generate();
-        Some(password)
-    }
-}
