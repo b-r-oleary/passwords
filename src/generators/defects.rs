@@ -13,7 +13,6 @@ pub struct Defects {
     defects: HashMap<char, Vec<char>>,
     min_defects: usize,
     max_defects: usize,
-    rng: ThreadRng,
 }
 
 impl Defects {
@@ -48,9 +47,7 @@ impl Defects {
             })
             .collect();
 
-        let rng = rand::thread_rng();
-
-        Defects { defects, min_defects, max_defects, rng }
+        Defects { defects, min_defects, max_defects }
     }
 
     pub fn with_vowels(min_defects: usize, max_defects: usize) -> Defects {
@@ -64,14 +61,12 @@ impl Defects {
             })
             .collect();
 
-        let rng = rand::thread_rng();
-
-        Defects { defects, min_defects, max_defects, rng }
+        Defects { defects, min_defects, max_defects }
     }
 }
 
 impl PasswordGenerator for Defects {
-    fn generate_with_seed(&mut self, seed: String) -> String {
+    fn generate_with_seed(&self, rng: &mut ThreadRng, seed: String) -> String {
 
         let chars: Vec<char> = seed.chars().into_iter().collect();
 
@@ -87,9 +82,9 @@ impl PasswordGenerator for Defects {
         let n_min: usize = min(n_possible, self.min_defects);
         let n_max: usize = min(n_possible, self.max_defects);
 
-        let n_defects = self.rng.gen_range(n_min, n_max + 1);
+        let n_defects = rng.gen_range(n_min, n_max + 1);
 
-        self.rng.shuffle(&mut possible_defect_locations);
+        rng.shuffle(&mut possible_defect_locations);
     
         let defect_locations = &possible_defect_locations[0..n_defects];
 
@@ -98,7 +93,7 @@ impl PasswordGenerator for Defects {
             .map(|(i, c): (usize, char)| -> char {
                 if defect_locations.contains(&i) {
                     let options = self.defects.get(&c).unwrap();
-                    *self.rng.choose(options).unwrap()
+                    *rng.choose(options).unwrap()
                 } else {
                     c
                 }

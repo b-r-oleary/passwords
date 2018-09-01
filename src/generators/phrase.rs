@@ -10,7 +10,6 @@ use super::base::PasswordGenerator;
 pub struct RandomWords {
     words: Vec<String>,
     length: usize,
-    rng: ThreadRng,
 }
 
 impl RandomWords {
@@ -25,21 +24,19 @@ impl RandomWords {
             .filter(|s| { s.len() > 3 })
             .collect();
 
-        let rng = rand::thread_rng();
-
-        RandomWords { words, length, rng }
+        RandomWords { words, length }
     }
 }
 
 impl PasswordGenerator for RandomWords {
-    fn generate_with_seed(&mut self, seed: String) -> String {
+    fn generate_with_seed(&self, rng: &mut ThreadRng, seed: String) -> String {
         let mut string_array = Vec::new();
         if seed.len() > 0 {
             string_array.push(seed)
         }
 
         for _ in 0..self.length {
-            let word = self.rng.choose(&self.words).unwrap();
+            let word = rng.choose(&self.words).unwrap();
             string_array.push(word.to_string());
         }
         string_array.join(" ")
@@ -48,7 +45,6 @@ impl PasswordGenerator for RandomWords {
 
 pub struct RandomPhrases {
     phrases: Vec<Vec<String>>,
-    rng: ThreadRng,
 }
 
 impl RandomPhrases {
@@ -77,15 +73,13 @@ impl RandomPhrases {
             })
             .collect();
 
-        let rng = rand::thread_rng();
-
-        RandomPhrases { phrases, rng }
+        RandomPhrases { phrases }
     }
 }
 
 impl PasswordGenerator for RandomPhrases {
-    fn generate_with_seed(&mut self, seed: String) -> String {
-        let phrase = self.rng.choose(&self.phrases).unwrap();
+    fn generate_with_seed(&self, rng: &mut ThreadRng, seed: String) -> String {
+        let phrase = rng.choose(&self.phrases).unwrap();
         seed + &phrase.join(" ")
     }
 }

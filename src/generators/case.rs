@@ -1,6 +1,8 @@
 extern crate inflector;
+extern crate rand;
 
 use inflector::Inflector;
+use rand::ThreadRng;
 
 use super::base::PasswordGenerator;
 
@@ -19,7 +21,7 @@ pub enum Case {
 }
 
 impl PasswordGenerator for Case {
-    fn generate_with_seed(&mut self, seed: String) -> String {
+    fn generate_with_seed(&self, _rng: &mut ThreadRng, seed: String) -> String {
         match self {
             Case::Camel => seed.to_camel_case(),
             Case::Class => seed.to_class_case(),

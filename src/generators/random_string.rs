@@ -9,7 +9,6 @@ use super::base::{ASCII_LOWERCASE, ASCII_UPPERCASE, DIGITS};
 pub struct RandomString {
     characters: Vec<char>,
     length: usize,
-    rng: ThreadRng,
 }
 
 impl RandomString {
@@ -24,9 +23,7 @@ impl RandomString {
             .chars()
             .collect();
 
-        let rng = rand::thread_rng();
-
-        RandomString { characters, length, rng }
+        RandomString { characters, length }
     }
     pub fn with_characters(self, characters: Vec<char>) -> RandomString {
         RandomString {
@@ -46,9 +43,9 @@ impl RandomString {
 }
 
 impl PasswordGenerator for RandomString {
-    fn generate_with_seed(&mut self, mut seed: String) -> String {
+    fn generate_with_seed(&self, rng: &mut ThreadRng, mut seed: String) -> String {
         for _ in 0..self.length {
-            let c = self.rng.choose(&self.characters).unwrap();
+            let c = rng.choose(&self.characters).unwrap();
             seed.push(*c);
         }
         seed
