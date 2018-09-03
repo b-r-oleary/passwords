@@ -7,6 +7,10 @@ use rand::ThreadRng;
 use super::base::PasswordGenerator;
 
 
+/// A password generator object that will modify the case of a seed password string.
+/// 
+/// This is a loose wrapper around functions provided by the `inflector` crate for
+/// converting between cases.
 pub enum Case {
     Camel,
     Class,
