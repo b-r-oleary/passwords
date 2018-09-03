@@ -26,7 +26,7 @@ pub trait PasswordGenerator {
     /// Calls `generate_with_seed` with a new random number generator and an
     /// empty seed string
     /// 
-    fn generate(&mut self) -> String {
+    fn generate(&self) -> String {
         let mut rng = rand::thread_rng();
         self.generate_with_seed(&mut rng, String::new())
     }
@@ -120,12 +120,49 @@ impl<'a> PasswordGenerator for Switch<'a> {
         let selection = rng.choose(&self.generators).unwrap();
         selection.generate_with_seed(rng, seed)
     }
-    // fn or<'b, T>(self, other: T) -> Switch<'b>
-    //     where
-    //         Self: Sized + 'b,
-    //         T: PasswordGenerator + Sized + 'b
-    // {
-    //     self.generators.push(Box::new(other));
-    //     Switch { generators: self.generators }
-    // }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_constant_new() {
+        let value = "test input";
+        let passwords = Constant::new(value);
+        assert_eq!(passwords.value, value);
+    }
+
+    #[test]
+    fn test_constant_generate() {
+        let value = "test input".to_string();
+        let passwords = Constant { value };
+        assert_eq!(passwords.generate(), passwords.value);
+    }
+
+    #[test]
+    fn test_constant_generate_with_seed() {
+        let value = " and more".to_string();
+        let passwords = Constant { value };
+        let mut rng = rand::thread_rng();
+        let seed = "test input".to_string();
+        assert_eq!(passwords.generate_with_seed(&mut rng, seed), "test input and more");
+    }
+
+    #[test]
+    fn test_constant_iterator() {
+        let value = "test input".to_string();
+        let passwords = Constant { value };
+        let mut iter = passwords.iterator().into_iter();
+        assert_eq!(iter.next(), Some("test input".to_string()));
+        assert_eq!(iter.next(), Some("test input".to_string()));
+    }
+
+    #[test]
+    fn test_constant_pipe() {
+        let passwords = Constant::new("test input")
+            .pipe(Constant::new(" and more"));
+
+        assert_eq!(passwords.generate(), "test input and more");
+    }
 }
