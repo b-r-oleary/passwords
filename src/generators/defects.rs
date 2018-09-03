@@ -9,6 +9,7 @@ use rand::{Rng, ThreadRng};
 use super::base::PasswordGenerator;
 
 
+/// A `PasswordGenerator` object that will apply defects to an input `seed` string.
 pub struct Defects {
     defects: HashMap<char, Vec<char>>,
     min_defects: usize,
@@ -16,6 +17,9 @@ pub struct Defects {
 }
 
 impl Defects {
+    /// Create a `Defects` object that will apply between `min_defects` and `max_defects`
+    /// defects to an input seed string by replacing letters with numbers or symbols
+    /// that look similar to those letters.
     pub fn with_symbols(min_defects: usize, max_defects: usize) -> Defects {
 
         let defects: HashMap<char, Vec<char>> = [
@@ -49,7 +53,8 @@ impl Defects {
 
         Defects { defects, min_defects, max_defects }
     }
-
+    /// Create a `Defects` object that will apply between `min_defects` and `max_defects`
+    /// defects to an input seed string by replacing vowels with different vowels.
     pub fn with_vowels(min_defects: usize, max_defects: usize) -> Defects {
 
         let vowels = vec!['a', 'e', 'i', 'o', 'u'];
@@ -99,5 +104,53 @@ impl PasswordGenerator for Defects {
                 }
             })
             .collect()
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_defects_with_symbols() {
+        let passwords = Defects::with_symbols(1, 1);
+        let mut rng = rand::thread_rng();
+        let input_outputs = [
+            ("A", "4"),
+            ("E", "3"),
+            ("Q", "0"),
+            ("J", "1"),
+            ("Z", "2"),
+            ("q", "9"),
+            ("F", "+"),
+            ("H", "#")
+        ];
+
+        for (input, output) in input_outputs.iter() {
+            assert_eq!(passwords.generate_with_seed(&mut rng, input.to_string()), output.to_string());
+        }
+    }
+
+    #[test]
+    fn test_defects_with_vowels_with_replacement() {
+        let passwords = Defects::with_vowels(1, 1);
+        let mut rng = rand::thread_rng();
+        let inputs = ["a", "e", "i", "o", "u"];
+
+        for input in inputs.iter() {
+            assert_ne!(passwords.generate_with_seed(&mut rng, input.to_string()), input.to_string());
+        }
+    }
+
+    #[test]
+    fn test_defects_with_vowels_without_replacement() {
+        let passwords = Defects::with_vowels(1, 1);
+        let mut rng = rand::thread_rng();
+        let inputs = ["A", "E", "I", "O", "U", "b", "c", "d", "f"];
+
+        for input in inputs.iter() {
+            assert_eq!(passwords.generate_with_seed(&mut rng, input.to_string()), input.to_string());
+        }
     }
 }
