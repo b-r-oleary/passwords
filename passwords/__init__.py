@@ -1,2 +1,2 @@
 from passwords.default import generate_password, xkcd_password
-from passwords.constructor.random_string import uuid4
+from passwords.generators.random_string import uuid4

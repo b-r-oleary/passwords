@@ -15,7 +15,7 @@ import os
 from nltk import sent_tokenize
 from nltk.corpus import words as nltk_words
 
-from passwords.base import Base
+from passwords.generators.base import Base
 
 
 class TextPhrase(Base):

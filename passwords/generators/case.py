@@ -12,7 +12,7 @@ Case - a function for obtaining any case object with a string key input
 """
 import random
 
-from passwords.base import Base
+from passwords.generators.base import Base
 
 
 class CamelCase(Base):

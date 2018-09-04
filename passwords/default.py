@@ -1,15 +1,19 @@
-"""
-this includes some default password generators constructed using password
+"""This includes some default password generators constructed using password
 generating components
 
 DefectPhrasePassword
-"""
 
-from passwords.constructor.base import Password, Switch
-from passwords.constructor.phrase import CorpusPhrase, Words
-from passwords.constructor.case import Case
-from passwords.constructor.defect import AlphaDefects, SymbolReplacements
-from passwords.constructor.random_string import Integers
+"""
+from passwords.generators import (
+    AlphaDefects,
+    Case,
+    CorpusPhrase,
+    Integers,
+    Password,
+    Switch,
+    SymbolReplacements,
+    Words
+)
 
 from nltk.corpus import movie_reviews
 

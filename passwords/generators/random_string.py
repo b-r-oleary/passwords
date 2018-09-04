@@ -4,7 +4,7 @@ allowed set of characters with a uniform distribution.
 """
 import random
 
-from passwords.base import Base, Password, Constant
+from passwords.generators.base import Base, Password, Constant
 
 
 class RandomString(Base):

@@ -13,7 +13,7 @@ SymbolReplacements: Inheriting from DefectMapping, apply defects to the seed
 """
 import random
 
-from passwords.base import Base
+from passwords.generators.base import Base
 
 
 class DefectMapping(Base):

@@ -4,7 +4,8 @@ constitute a password.
 
 Base:       the base class that all password generating objects inherit
 Password:   an object that constitutes a compound password generating object
-            that consists of several password generating objects chained together
+            that consists of several password generating objects chained
+            together
 Constant:   This is the most trivial example of a password generating
             object that inherits from base. This object simply generates a
             constant
@@ -20,12 +21,12 @@ import random
 
 
 class Base(object):
-    """The base class that all password generating objects inherit
+    """A base class that all password generating objects inherit.
 
     """
     def generate(self, seed=""):
         """Objects that inherit from Base must implement the method 'generate'
-        which takes a string input *seed* and outputs a string
+        which takes a string input *seed* and outputs a string.
 
         """
         raise NotImplementedError(
@@ -37,8 +38,10 @@ class Base(object):
         *Password* which chains these two objects together.
 
         """
-        args = [arg for arg in args
-                if isinstance(arg, Base)]
+        args = [
+            arg for arg in args
+            if isinstance(arg, Base)
+        ]
         return Password([self] + list(args))
 
     def generate_multiple(self, N, seed=""):
@@ -48,8 +51,8 @@ class Base(object):
         """
         if not isinstance(N, int):
             raise IOError('N must be an integer')
-        return [self.generate(seed=seed)
-                for i in range(N)]
+        for i in range(N):
+            yield self.generate(seed=seed)
 
     def __str__(self):
         output = self.__class__.__name__
@@ -70,13 +73,14 @@ class Password(Base):
     that consists of several password generating objects chained together
 
     """
-    def __init__(self,
-                 components=None):
-        """
-        *inputs*
-        components (list of Base objects)
+    def __init__(self, components=None):
         """
 
+        Parameters
+        ----------
+        components (list of Base objects)
+
+        """
         if components is None:
                 components = []
 
@@ -84,7 +88,7 @@ class Password(Base):
             components = [components]
 
         if isinstance(components, (list, tuple)):
-            if all([isinstance(component, Base) 
+            if all([isinstance(component, Base)
                     for component in components]):
 
                 self.components = components
