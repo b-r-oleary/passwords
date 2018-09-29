@@ -15,43 +15,49 @@ import random
 from passwords.generators.base import Base
 
 
-class CamelCase(Base):
-    def generate(self, seed=""):
+class CaseBase(Base):
+    pass
+
+
+class CamelCase(CaseBase):
+    def generate(self, seed: str='') -> str:
         seed = seed.lstrip().rstrip()
         words = seed.split(' ')
         return ''.join([word.title() for word in words])
 
 
-class SnakeCase(Base):
-    def generate(self, seed=""):
+class SnakeCase(CaseBase):
+    def generate(self, seed: str='') -> str:
         seed = seed.lstrip().rstrip()
         words = seed.split(' ')
         return '_'.join([word.lower() for word in words])
 
 
-class Upper(Base):
-    def generate(self, seed=""):
+class Upper(CaseBase):
+    def generate(self, seed: str='') -> str:
         return seed.upper()
 
 
-class Lower(Base):
-    def generate(self, seed=""):
+class Lower(CaseBase):
+    def generate(self, seed: str='') -> str:
         return seed.lower()
 
 
-class Capitalize(Base):
-    def generate(self, seed=""):
+class Capitalize(CaseBase):
+    def generate(self, seed: str='') -> str:
         return seed.capitalize()
 
 
-class RandomCase(Base):
-    def generate(self, seed=""):
+class RandomCase(CaseBase):
+    def generate(self, seed: str='') -> str:
         options = [str.upper, str.lower]
-        return ''.join([random.choice(options)(char)
-                        for char in seed])
+        return ''.join([
+            random.choice(options)(char)
+            for char in seed]
+        )
 
 
-def Case(case, *args, **kwargs):
+def Case(case: str) -> CaseBase:
     """A function for obtaining any case object with a string key input
 
     case (string) available options are: camel_case, snake_case, upper, lower
@@ -66,6 +72,6 @@ def Case(case, *args, **kwargs):
                  random_case=RandomCase)
 
     if case in cases:
-        return cases[case](*args, **kwargs)
+        return cases[case]()
     else:
-        raise IOError("invalid case: allowed cases are: " + str(cases.keys()))
+        raise KeyError("invalid case: allowed cases are: " + str(cases.keys()))

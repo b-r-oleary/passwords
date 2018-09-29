@@ -12,6 +12,7 @@ SymbolReplacements: Inheriting from DefectMapping, apply defects to the seed
 
 """
 import random
+from typing import Dict, Optional
 
 from passwords.generators.base import Base
 
@@ -22,13 +23,13 @@ class DefectMapping(Base):
     defects in a seed password.
 
     """
-    def __init__(self,
-                 mappings,
-                 n=None,
-                 n_min=None,
-                 n_max=None,
-                 force_change=False,
-                 ):
+    def __init__(
+            self,
+            mappings: Dict[str, str],
+            n: Optional[int]=None,
+            n_min: Optional[int]=None,
+            n_max: Optional[int]=None,
+            force_change: bool=False) -> None:
         """
 
         Parameters
@@ -48,61 +49,48 @@ class DefectMapping(Base):
             dictionary can map to a single character that exists in the key.
 
         """
-        ns = [i for i in
-              [n, n_min, n_max]
-              if i is not None]
+        ns = [i for i in [n, n_min, n_max] if i is not None]
 
-        if len(ns) == 0:
-            ns = [None]
-
-        self.n_min = min(ns)
-        self.n_max = max(ns)
-
+        self.n_min = min(ns) if len(ns) > 0 else None
+        self.n_max = max(ns) if len(ns) > 0 else None
         self.force_change = force_change
-
         self.mappings = mappings
 
         # check that the mappings imput is valid
         self.mappings_valid()
 
-    def mappings_valid(self):
-        """
-        perform error checking on the mappings input
+    def mappings_valid(self) -> None:
+        """Perform error checking on the mappings input.
+
         """
         items = list(self.mappings.items())
         # shuffle items in case a given character is in multiple keys
         random.shuffle(items)
 
         for key, value in items:
-
-            if (not(isinstance(key,   str)) or
-                not(isinstance(value, str))):
-                raise IOError('mappings must map strings to strings')
-
             unique = set(list(value))
             N = len(unique)
 
             if N == 0:
                 raise IOError('mapping must map to at least one character')
             if N == 1:
-                if value in key and force_change:
+                if value in key and self.force_change:
                     raise IOError(
                         "deterministic mappings are not allowed when "
                         " forcing a change on the defect character.")
 
-    def get_defect_from_char(self, char):
-        """
-        given a character, randomly select a defect replacement from the
+    def get_defect_from_char(self, char: str) -> Optional[str]:
+        """Given a character, randomly select a defect replacement from the
         mappings dictionary
+
         """
         for old_chars, new_chars in self.mappings.items():
             if char in old_chars:
                 return random.choice(new_chars)
         return None
 
-    def get_n_defects(self, seed):
-        """
-        given the seed password, determine the number of defects that could
+    def get_n_defects(self, seed: str) -> int:
+        """Given the seed password, determine the number of defects that could
         possibly be applied, resolve that specified range of number of inputs.
         If a range is still possible randomly select a number of defects.
 
@@ -123,7 +111,7 @@ class DefectMapping(Base):
 
         return random.randint(n_min, n_max)
 
-    def generate(self, seed=""):
+    def generate(self, seed: str="") -> str:
         if len(seed) < 1:
             return ""
 
@@ -173,10 +161,10 @@ class AlphaDefects(DefectMapping):
     letters = 'abcdefghijklmnopqrstuvwxyz'
 
     def __init__(self,
-                 respect_vowels=True,
-                 replace_vowels=True,
-                 replace_consonants=False,
-                 respect_consonants=True,
+                 respect_vowels: bool=True,
+                 replace_vowels: bool=True,
+                 replace_consonants: bool=False,
+                 respect_consonants: bool=True,
                  **kwargs):
         """
         *inputs*
@@ -256,5 +244,4 @@ class SymbolReplacements(DefectMapping):
             "XxfF": "+",
             "H": "#",
         }
-
         DefectMapping.__init__(self, mappings, **kwargs)

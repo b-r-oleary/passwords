@@ -18,33 +18,29 @@ RandomSurround: randomly chooses a set of characters to surround a password
 
 """
 import random
+from typing import List, Optional, Tuple
 
 
 class Base(object):
     """A base class that all password generating objects inherit.
 
     """
-    def generate(self, seed=""):
+    def generate(self, seed: str='') -> str:
         """Objects that inherit from Base must implement the method 'generate'
         which takes a string input *seed* and outputs a string.
 
         """
-        raise NotImplementedError(
-            "all password objects must implement a generate method")
+        raise NotImplementedError
 
-    def append(self, *args):
+    def append(self, *args: 'Base') -> 'Password':
         """Appending another object that inherits from Base to an object that
         inherits from Base returns a compound password generating object
         *Password* which chains these two objects together.
 
         """
-        args = [
-            arg for arg in args
-            if isinstance(arg, Base)
-        ]
         return Password([self] + list(args))
 
-    def generate_multiple(self, N, seed=""):
+    def generate_multiple(self, N: int, seed: str=''):
         """This method is included for convenience to generate an array of
         passwords rather than a single one.
 
@@ -54,17 +50,17 @@ class Base(object):
         for i in range(N):
             yield self.generate(seed=seed)
 
-    def __str__(self):
+    def __str__(self) -> str:
         output = self.__class__.__name__
         attr = self.get_string_attributes()
         if attr is not None:
             output += ': ' + str(attr)
         return "<{output}>".format(output=output)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
-    def get_string_attributes(self):
+    def get_string_attributes(self) -> Optional[str]:
         return None
 
 
@@ -73,7 +69,7 @@ class Password(Base):
     that consists of several password generating objects chained together
 
     """
-    def __init__(self, components=None):
+    def __init__(self, components: List[Base]) -> None:
         """
 
         Parameters
@@ -81,24 +77,9 @@ class Password(Base):
         components (list of Base objects)
 
         """
-        if components is None:
-                components = []
+        self.components = components
 
-        if isinstance(components, Base):
-            components = [components]
-
-        if isinstance(components, (list, tuple)):
-            if all([isinstance(component, Base)
-                    for component in components]):
-
-                self.components = components
-                return
-
-        raise IOError(
-            "components must be either a password generating object or a list "
-            "of password generating objects.")
-
-    def generate(self, seed=""):
+    def generate(self, seed: str='') -> str:
         """
         generate chains together the generate method for each component
         in self.components to generate a password
@@ -108,26 +89,22 @@ class Password(Base):
             password = component.generate(seed=password)
         return password
 
-    def append(self, component):
+    def append(self, component: Base) -> 'Password':
         """
         this method overides Base.append to explictly append a Base object
         to the Password object rather than generating a new password object
         """
-        if not isinstance(component, Base):
-            raise IOError(
-                "you can only append password generating objects that inherit "
-                "from Base")
-
         self.components.append(component)
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         head = "<{cls}>".format(cls=self.__class__.__name__)
         components = indent(
-                      '\n'.join(
-                              [str(component) 
-                               for component in self.components]
-                      ), '\t')
+            '\n'.join(
+                [str(component) for component in self.components]
+            ),
+            '\t'
+        )
         return '\n'.join([head, components])
 
 
@@ -135,59 +112,51 @@ class Switch(Password):
     """Performs a random switch amongst components in a password generating object.
 
     """
-    def generate(self, seed=""):
+    def generate(self, seed: str="") -> str:
         return random.choice(
             self.components
         ).generate(seed=seed)
 
 
 class Constant(Base):
-    """
-    This is the most trivial example of a password generating
+    """This is the most trivial example of a password generating
     object that inherits from base. This object simply generates a
     constant
+
     """
-    def __init__(self, value):
+    def __init__(self, value: str) -> None:
         self.value = value
 
-    def generate(self, seed=""):
+    def generate(self, seed: str='') -> str:
         return seed + self.value
 
-    def get_string_attributes(self):
-        return str(self.value)
+    def get_string_attributes(self) -> str:
+        return self.value
 
 
 class Surround(Base):
-    def __init__(self, *args):
+    def __init__(
+            self,
+            left: Optional[str]=None,
+            right: Optional[str]=None) -> None:
 
-        self.left = ""
-        self.right = ""
+        self.left = left or ''
+        self.right = right or left or ''
 
-        if len(args) == 1:
-            self.left = args[0]
-            self.right = args[0]
+    def generate(self, seed: str='') -> str:
+        return ''.join([self.left, seed, self.right])
 
-        elif len(args) > 1:
-            self.left = args[0]
-            self.right = args[1]
-
-    def generate(self, seed=""):
-        items = [self.left, seed, self.right]
-        items = [item for item in items
-                 if item is not None]
-        return ''.join(items)
-
-    def get_string_attributes(self):
-        return self.left + ' ... ' + self.right
+    def get_string_attributes(self) -> str:
+        return '{} ... {}'.format(self.left, self.right)
 
 
-def RandomSurround(braces):
+def RandomSurround(braces: List[Tuple[str, str]]) -> Switch:
     return Switch([
         Surround(*brace) for brace in braces
     ])
 
 
-def indent(text, indent_string):
+def indent(text: str, indent_string: str) -> str:
     output = []
     for line in text.split('\n'):
         output.append(indent_string + line)

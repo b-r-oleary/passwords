@@ -12,7 +12,7 @@ class RandomString(Base):
     uniform distribution.
 
     """
-    def __init__(self, n, chars):
+    def __init__(self, n: int, chars: str) -> None:
         """
 
         Parameters
@@ -26,9 +26,9 @@ class RandomString(Base):
 
     def generate_string(self):
         return ''.join([
-                random.choice(self.chars)
-                for i in range(self.n)
-            ])
+            random.choice(self.chars)
+            for i in range(self.n)
+        ])
 
     def generate(self, seed=""):
         return seed + self.generate_string()
