@@ -196,7 +196,7 @@ mod test {
             passwords
                 .words
                 .into_iter()
-                .all(|word| word.len() >= 5);
+                .all(|word| word.len() >= 5)
         )
     }
 
