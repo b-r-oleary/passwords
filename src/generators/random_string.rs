@@ -1,6 +1,7 @@
 extern crate rand;
 
-use rand::{Rng, ThreadRng};
+use rand::rngs::ThreadRng;
+use rand::seq::SliceRandom;
 
 use super::base::PasswordGenerator;
 use super::base::{ASCII_LOWERCASE, ASCII_UPPERCASE, DIGITS};
@@ -47,7 +48,7 @@ impl RandomString {
 impl PasswordGenerator for RandomString {
     fn generate_with_seed(&self, rng: &mut ThreadRng, mut seed: String) -> String {
         for _ in 0..self.length {
-            let c = rng.choose(&self.characters).unwrap();
+            let c = self.characters.choose(rng).unwrap();
             seed.push(*c);
         }
         seed

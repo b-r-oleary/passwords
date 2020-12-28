@@ -2,7 +2,7 @@ extern crate inflector;
 extern crate rand;
 
 use inflector::Inflector;
-use rand::ThreadRng;
+use rand::rngs::ThreadRng;
 
 use super::base::PasswordGenerator;
 

@@ -3,7 +3,8 @@ extern crate rand;
 use std::fs;
 use std::io;
 
-use rand::{Rng, ThreadRng};
+use rand::rngs::ThreadRng;
+use rand::seq::SliceRandom;
 
 use super::base::PasswordGenerator;
 
@@ -95,7 +96,7 @@ impl PasswordGenerator for RandomWords {
         }
 
         for _ in 0..self.n_words {
-            let word = rng.choose(&self.words).unwrap();
+            let word = self.words.choose(rng).unwrap();
             string_array.push(word.to_string());
         }
         string_array.join(" ")
@@ -133,7 +134,7 @@ impl RandomPhrases {
 
 impl PasswordGenerator for RandomPhrases {
     fn generate_with_seed(&self, rng: &mut ThreadRng, seed: String) -> String {
-        let phrase = rng.choose(&self.phrases).unwrap();
+        let phrase = self.phrases.choose(rng).unwrap();
         seed + &phrase.join(" ")
     }
 }
@@ -197,12 +198,7 @@ mod test {
 
         assert_eq!(passwords.n_words, 4);
         assert!(passwords.words.len() > 0);
-        assert!(
-            passwords
-                .words
-                .into_iter()
-                .all(|word| word.len() >= 5)
-        );
+        assert!(passwords.words.into_iter().all(|word| word.len() >= 5));
     }
 
     #[test]

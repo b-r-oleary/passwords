@@ -4,7 +4,9 @@ use std::cmp::min;
 use std::collections::HashMap;
 use std::string::ToString;
 
-use rand::{Rng, ThreadRng};
+use rand::rngs::ThreadRng;
+use rand::seq::SliceRandom;
+use rand::Rng;
 
 use super::base::PasswordGenerator;
 
@@ -92,9 +94,9 @@ impl PasswordGenerator for Defects {
         let n_min: usize = min(n_possible, self.min_defects);
         let n_max: usize = min(n_possible, self.max_defects);
 
-        let n_defects = rng.gen_range(n_min, n_max + 1);
+        let n_defects = rng.gen_range(n_min..=n_max);
 
-        rng.shuffle(&mut possible_defect_locations);
+        possible_defect_locations.shuffle(rng);
 
         let defect_locations = &possible_defect_locations[0..n_defects];
 
@@ -104,7 +106,7 @@ impl PasswordGenerator for Defects {
             .map(|(i, c): (usize, char)| -> char {
                 if defect_locations.contains(&i) {
                     let options = self.defects.get(&c).unwrap();
-                    *rng.choose(options).unwrap()
+                    *options.choose(rng).unwrap()
                 } else {
                     c
                 }

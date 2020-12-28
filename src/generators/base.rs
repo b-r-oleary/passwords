@@ -2,7 +2,8 @@ extern crate rand;
 
 use std::str::FromStr;
 
-use rand::{Rng, ThreadRng};
+use rand::rngs::ThreadRng;
+use rand::seq::SliceRandom;
 
 pub static ASCII_LOWERCASE: &str = "abcdefghijklmnopqrstuvwxyz";
 pub static ASCII_UPPERCASE: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -123,7 +124,7 @@ pub struct Switch<'a> {
 
 impl<'a> PasswordGenerator for Switch<'a> {
     fn generate_with_seed(&self, rng: &mut ThreadRng, seed: String) -> String {
-        let selection = rng.choose(&self.generators).unwrap();
+        let selection = self.generators.choose(rng).unwrap();
         selection.generate_with_seed(rng, seed)
     }
 }
