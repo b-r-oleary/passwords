@@ -5,7 +5,6 @@ use rand::{Rng, ThreadRng};
 use super::base::PasswordGenerator;
 use super::base::{ASCII_LOWERCASE, ASCII_UPPERCASE, DIGITS};
 
-
 /// A `PasswordGenerator` that will generate a random string with size `length`
 /// out of the candidate list of `characters`.
 pub struct RandomString {
@@ -17,13 +16,7 @@ impl RandomString {
     /// Create a `RandomString` object that will generate strings with size
     /// `length` with a default character set of ascii characters.
     pub fn new(length: usize) -> RandomString {
-
-        let characters: Vec<char> = format!(
-                "{}{}{}",
-                ASCII_LOWERCASE,
-                ASCII_UPPERCASE,
-                DIGITS
-            )
+        let characters: Vec<char> = format!("{}{}{}", ASCII_LOWERCASE, ASCII_UPPERCASE, DIGITS)
             .chars()
             .collect();
 
@@ -61,7 +54,6 @@ impl PasswordGenerator for RandomString {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -69,9 +61,11 @@ mod test {
     #[test]
     fn test_random_string_new() {
         let characters = RandomString::new(5).characters.sort();
-        let expected_characters = format!(
-            "{}{}{}", DIGITS, ASCII_LOWERCASE, ASCII_UPPERCASE
-        ).chars().into_iter().collect::<Vec<char>>().sort();
+        let expected_characters = format!("{}{}{}", DIGITS, ASCII_LOWERCASE, ASCII_UPPERCASE)
+            .chars()
+            .into_iter()
+            .collect::<Vec<char>>()
+            .sort();
 
         assert_eq!(characters, expected_characters);
     }
@@ -80,7 +74,9 @@ mod test {
     fn test_random_string_with_characters() {
         let characters = "lmnop";
         assert_eq!(
-            RandomString::new(5).with_characters(characters.chars().collect()).characters,
+            RandomString::new(5)
+                .with_characters(characters.chars().collect())
+                .characters,
             characters.chars().collect::<Vec<char>>()
         );
     }
@@ -113,15 +109,17 @@ mod test {
     fn test_random_string_generate_with_trivial_seed() {
         let length = 5;
         let characters: Vec<char> = "lmnop".chars().collect();
-        let passwords = RandomString::new(length)
-            .with_characters(characters.clone());
+        let passwords = RandomString::new(length).with_characters(characters.clone());
 
         let mut rng = rand::thread_rng();
 
         for _ in 0..10 {
             let password = passwords.generate_with_seed(&mut rng, String::new());
             assert_eq!(password.len(), length);
-            assert!(password.chars().into_iter().all(|c| { characters.contains(&c) }));
+            assert!(password
+                .chars()
+                .into_iter()
+                .all(|c| { characters.contains(&c) }));
         }
     }
 
@@ -129,8 +127,7 @@ mod test {
     fn test_random_string_generate_with_nontrivial_seed() {
         let length = 5;
         let characters: Vec<char> = "01_.,!?".chars().collect();
-        let passwords = RandomString::new(length)
-            .with_characters(characters.clone());
+        let passwords = RandomString::new(length).with_characters(characters.clone());
 
         let mut rng = rand::thread_rng();
 
@@ -138,7 +135,10 @@ mod test {
             let password = passwords.generate_with_seed(&mut rng, "Ahh".to_string());
             assert_eq!(password.len(), length + 3);
             assert_eq!(&password[..3], "Ahh");
-            assert!(password[3..].chars().into_iter().all(|c| { characters.contains(&c) }));
+            assert!(password[3..]
+                .chars()
+                .into_iter()
+                .all(|c| { characters.contains(&c) }));
         }
     }
 }

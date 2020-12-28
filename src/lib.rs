@@ -1,14 +1,13 @@
-extern crate rand;
 extern crate inflector;
+extern crate rand;
 
 pub mod generators;
 
-pub use generators::base::{PasswordGenerator, ChainedGenerator, Constant};
+pub use generators::base::{ChainedGenerator, Constant, PasswordGenerator};
 pub use generators::case::Case;
 pub use generators::defects::Defects;
 pub use generators::phrase::{RandomPhrases, RandomWords, Text};
 pub use generators::random_string::RandomString;
-
 
 pub fn phrase_passwords<'a>() -> ChainedGenerator<'a> {
     Constant::new("")
@@ -20,9 +19,11 @@ pub fn phrase_passwords<'a>() -> ChainedGenerator<'a> {
 }
 
 pub fn xkcd_passwords<'a>() -> ChainedGenerator<'a> {
-    Constant::new("")
-        .pipe(
-            RandomWords::from_text(&Text::nouns(), 4, 4)
-            .or(RandomWords::from_text(&Text::the_time_machine(), 4, 5))
-        )
+    Constant::new("").pipe(
+        RandomWords::from_text(&Text::nouns(), 4, 4).or(RandomWords::from_text(
+            &Text::the_time_machine(),
+            4,
+            5,
+        )),
+    )
 }

@@ -2,30 +2,29 @@ extern crate rand;
 
 use std::str::FromStr;
 
-use rand::{ThreadRng, Rng};
+use rand::{Rng, ThreadRng};
 
 pub static ASCII_LOWERCASE: &str = "abcdefghijklmnopqrstuvwxyz";
 pub static ASCII_UPPERCASE: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 pub static DIGITS: &str = "0123456789";
 
-
 /// A trait that is implemented by all objects that generate passwords.
 pub trait PasswordGenerator {
     /// Generate a random password given a seed and random number generator.
-    /// 
+    ///
     /// # Arguments
     /// * `rng` - a random number generator
     /// * `seed` - an input string that the random number generator can act on.
-    /// 
+    ///
     fn generate_with_seed(&self, _rng: &mut ThreadRng, seed: String) -> String {
         seed
     }
 
     /// Generate a random password.
-    /// 
+    ///
     /// Calls `generate_with_seed` with a new random number generator and an
     /// empty seed string
-    /// 
+    ///
     fn generate(&self) -> String {
         let mut rng = rand::thread_rng();
         self.generate_with_seed(&mut rng, String::new())
@@ -34,11 +33,11 @@ pub trait PasswordGenerator {
     /// Create a `ChainedGenerator` by pipelining this `PasswordGenerator` with
     /// another one.
     fn pipe<'a, T>(self, other: T) -> ChainedGenerator<'a>
-        where
-            Self: Sized + 'a,
-            T: PasswordGenerator + Sized + 'a
+    where
+        Self: Sized + 'a,
+        T: PasswordGenerator + Sized + 'a,
     {
-        ChainedGenerator { 
+        ChainedGenerator {
             first: Box::new(self),
             second: Box::new(other),
         }
@@ -47,19 +46,22 @@ pub trait PasswordGenerator {
     /// Create a `PasswordIterator` from a `PasswordGenerator` which will generate
     /// an infinite sequence of random passwords when used as an iterator.
     fn iterator<'a>(self) -> PasswordIterator<'a>
-        where Self: Sized + 'a
+    where
+        Self: Sized + 'a,
     {
         let rng = rand::thread_rng();
-        PasswordIterator { generator: Box::new(self), rng: rng }
+        PasswordIterator {
+            generator: Box::new(self),
+            rng: rng,
+        }
     }
 
     fn or<'a, T>(self, other: T) -> Switch<'a>
-        where
-            Self: Sized + 'a,
-            T: PasswordGenerator + Sized + 'a
+    where
+        Self: Sized + 'a,
+        T: PasswordGenerator + Sized + 'a,
     {
-        let generators: Vec<Box<dyn PasswordGenerator>> =
-            vec![Box::new(other), Box::new(self)];
+        let generators: Vec<Box<dyn PasswordGenerator>> = vec![Box::new(other), Box::new(self)];
 
         Switch { generators }
     }
@@ -80,7 +82,9 @@ impl<'a> PasswordGenerator for ChainedGenerator<'a> {
 }
 
 /// A `PasswordGenerator` that simply generates a constant password.
-pub struct Constant { value: String }
+pub struct Constant {
+    value: String,
+}
 
 impl Constant {
     pub fn new(seed: &str) -> Constant {
@@ -99,14 +103,16 @@ impl PasswordGenerator for Constant {
 /// a `PasswordGenerator`.
 pub struct PasswordIterator<'a> {
     generator: Box<dyn PasswordGenerator + 'a>,
-    rng: ThreadRng
+    rng: ThreadRng,
 }
 
 impl<'a> Iterator for PasswordIterator<'a> {
     type Item = String;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let password = self.generator.generate_with_seed(&mut self.rng, String::new());
+        let password = self
+            .generator
+            .generate_with_seed(&mut self.rng, String::new());
         Some(password)
     }
 }
@@ -146,7 +152,10 @@ mod test {
         let passwords = Constant { value };
         let mut rng = rand::thread_rng();
         let seed = "test input".to_string();
-        assert_eq!(passwords.generate_with_seed(&mut rng, seed), "test input and more");
+        assert_eq!(
+            passwords.generate_with_seed(&mut rng, seed),
+            "test input and more"
+        );
     }
 
     #[test]
@@ -160,8 +169,7 @@ mod test {
 
     #[test]
     fn test_constant_pipe() {
-        let passwords = Constant::new("test input")
-            .pipe(Constant::new(" and more"));
+        let passwords = Constant::new("test input").pipe(Constant::new(" and more"));
 
         assert_eq!(passwords.generate(), "test input and more");
     }

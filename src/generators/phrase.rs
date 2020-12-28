@@ -7,7 +7,6 @@ use rand::{Rng, ThreadRng};
 
 use super::base::PasswordGenerator;
 
-
 /// An object with convenience methods for loading words or phrases from a file.
 pub struct Text {
     filename: String,
@@ -18,13 +17,13 @@ impl Text {
     fn new(filename: String) -> Text {
         Text { filename }
     }
-    /// Load a vector of lowercase words from file. 
+    /// Load a vector of lowercase words from file.
     fn load_words(&self) -> Result<Vec<String>, io::Error> {
         let words: Vec<String> = fs::read_to_string(&self.filename)?
             .to_lowercase()
             .replace(|c: char| !c.is_alphanumeric(), " ")
             .split_whitespace()
-            .map(|s| { s.to_string() })
+            .map(|s| s.to_string())
             .collect();
 
         Ok(words)
@@ -33,15 +32,12 @@ impl Text {
     fn load_phrases(&self) -> Result<Vec<Vec<String>>, io::Error> {
         let phrases: Vec<Vec<String>> = fs::read_to_string(&self.filename)?
             .to_lowercase()
-            .replace(|c: char| {
-                !(c.is_alphanumeric() || c == '.' || c == ',' || c == '\n')
-            }, " ")
+            .replace(
+                |c: char| !(c.is_alphanumeric() || c == '.' || c == ',' || c == '\n'),
+                " ",
+            )
             .split(|c: char| c == '.' || c == ',')
-            .map(|p| {
-                p.split_whitespace()
-                .map(|s| s.to_string())
-                .collect()
-            })
+            .map(|p| p.split_whitespace().map(|s| s.to_string()).collect())
             .collect();
 
         Ok(phrases)
@@ -63,7 +59,7 @@ impl Text {
     }
 }
 
-/// A `PasswordGenerator` that will generate a random sequence of words of 
+/// A `PasswordGenerator` that will generate a random sequence of words of
 /// length `n_words` selected from the `words` vector.
 pub struct RandomWords {
     words: Vec<String>,
@@ -74,9 +70,11 @@ impl RandomWords {
     /// Create a `RandomWords` object with `words` with lengths that are greater than
     /// or equal in length to `min_word_length` loaded from an input `text`.
     pub fn from_text(text: &Text, n_words: usize, min_word_length: usize) -> RandomWords {
-        let words: Vec<String> = text.load_words().unwrap()
+        let words: Vec<String> = text
+            .load_words()
+            .unwrap()
             .into_iter()
-            .filter(|s| { s.len() >= min_word_length })
+            .filter(|s| s.len() >= min_word_length)
             .collect();
 
         RandomWords { words, n_words }
@@ -113,7 +111,9 @@ impl RandomPhrases {
     /// Create a `RandomPhrases` object with `phrases` derived from a `text` with phrases
     /// that have lengths between `min_length` and `max_length`.
     pub fn from_text(text: &Text, min_length: usize, max_length: usize) -> RandomPhrases {
-        let phrases: Vec<Vec<String>> = text.load_phrases().unwrap()
+        let phrases: Vec<Vec<String>> = text
+            .load_phrases()
+            .unwrap()
             .into_iter()
             .filter(|p| {
                 let len = p.len();
@@ -137,7 +137,6 @@ impl PasswordGenerator for RandomPhrases {
         seed + &phrase.join(" ")
     }
 }
-
 
 #[cfg(test)]
 mod test {
@@ -180,8 +179,14 @@ mod test {
 
     #[test]
     fn test_texts() {
-        assert_eq!(Text::alice_in_wonderland().filename, "./texts/alice-in-wonderland.txt");
-        assert_eq!(Text::the_time_machine().filename, "./texts/the-time-machine.txt");
+        assert_eq!(
+            Text::alice_in_wonderland().filename,
+            "./texts/alice-in-wonderland.txt"
+        );
+        assert_eq!(
+            Text::the_time_machine().filename,
+            "./texts/the-time-machine.txt"
+        );
         assert_eq!(Text::nouns().filename, "./texts/nouns.txt");
     }
 
@@ -202,19 +207,16 @@ mod test {
 
     #[test]
     fn test_random_words_generate_with_seed() {
-        let passwords = RandomWords::from_text(
-            &Text::alice_in_wonderland(), 4, 5);
+        let passwords = RandomWords::from_text(&Text::alice_in_wonderland(), 4, 5);
         let mut rng = rand::thread_rng();
 
         for _ in 0..10 {
             let password = passwords.generate_with_seed(&mut rng, String::new());
             let words: Vec<&str> = password.split(" ").collect();
             assert_eq!(words.len(), 4);
-            assert!(
-                words.into_iter().all(|word| {
-                     word.len() >= 5 && passwords.words.contains(&word.to_string())
-                })
-            );
+            assert!(words
+                .into_iter()
+                .all(|word| { word.len() >= 5 && passwords.words.contains(&word.to_string()) }));
         }
     }
 
@@ -224,10 +226,10 @@ mod test {
         let passwords = RandomPhrases::from_filename(filename, 3, 5);
 
         assert!(passwords.phrases.len() > 0);
-        assert!(
-            passwords.phrases.into_iter()
-                .all(|phrase| phrase.len() >= 3 && phrase.len() <= 5)
-        );
+        assert!(passwords
+            .phrases
+            .into_iter()
+            .all(|phrase| phrase.len() >= 3 && phrase.len() <= 5));
     }
 
     #[test]

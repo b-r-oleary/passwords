@@ -6,9 +6,8 @@ use rand::ThreadRng;
 
 use super::base::PasswordGenerator;
 
-
 /// A password generator object that will modify the case of a seed password string.
-/// 
+///
 /// This is a loose wrapper around functions provided by the `inflector` crate for
 /// converting between cases.
 pub enum Case {
@@ -37,7 +36,8 @@ impl PasswordGenerator for Case {
             Case::Table => seed.to_table_case(),
             Case::Title => seed.to_title_case(),
             Case::Upper => seed.to_uppercase(),
-        }.to_string()
+        }
+        .to_string()
     }
 }
 
@@ -63,7 +63,7 @@ mod test {
             (Case::Snake, "which_case_is_this"),
             (Case::Table, "which_case_is_this"),
             (Case::Title, "Which Case Is This"),
-            (Case::Upper, "WHICH CASE IS THIS")
+            (Case::Upper, "WHICH CASE IS THIS"),
         ];
 
         for (case, output) in case_outputs.iter() {
