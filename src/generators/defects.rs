@@ -37,7 +37,7 @@ impl Defects {
             ("XxfF", "+"),
             ("H", "#"),
         ]
-        .into_iter()
+        .iter()
         .flat_map(|(s, t): &(&str, &str)| -> Vec<(char, Vec<char>)> {
             s.chars()
                 .into_iter()
