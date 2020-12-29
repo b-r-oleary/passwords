@@ -1,6 +1,3 @@
-extern crate inflector;
-extern crate rand;
-
 pub mod generators;
 
 pub use generators::base::{ChainedGenerator, Constant, PasswordGenerator};

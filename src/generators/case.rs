@@ -1,6 +1,3 @@
-extern crate inflector;
-extern crate rand;
-
 use inflector::Inflector;
 use rand::rngs::ThreadRng;
 

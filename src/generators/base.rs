@@ -1,5 +1,3 @@
-extern crate rand;
-
 use std::str::FromStr;
 
 use rand::rngs::ThreadRng;

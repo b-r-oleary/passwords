@@ -1,5 +1,3 @@
-extern crate rand;
-
 use std::fs;
 use std::io;
 

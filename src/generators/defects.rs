@@ -1,5 +1,3 @@
-extern crate rand;
-
 use std::cmp::min;
 use std::collections::HashMap;
 use std::string::ToString;
