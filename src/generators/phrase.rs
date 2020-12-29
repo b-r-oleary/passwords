@@ -16,7 +16,7 @@ impl<'a> Text<'a> {
     pub const NOUNS: Text<'static> = Text::new(include_str!("../../texts/nouns.txt"));
 
     /// Create a `Text` object from a text string
-    const fn new(text: &str) -> Text {
+    pub const fn new(text: &str) -> Text {
         Text { text }
     }
     /// Load a vector of lowercase words from file.

@@ -90,6 +90,9 @@ impl Constant {
         let value = String::from_str(&seed).unwrap();
         Constant { value }
     }
+    pub fn empty() -> Constant {
+        Constant::new("")
+    }
 }
 
 impl PasswordGenerator for Constant {
